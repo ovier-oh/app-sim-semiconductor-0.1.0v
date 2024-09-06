@@ -1,0 +1,28 @@
+├── api
+│   ├── api.py
+│   ├── requirements.txt
+│   └── test
+├── backend
+│   ├── app.py
+│   ├── database
+│   │   └── db.sqlite3
+│   ├── models.py
+│   ├── requeriments.txt
+│   ├── static
+│   │   ├── scripts.js
+│   │   └── sytyle.css
+│   └── templates
+│       ├── dashboard.html
+│       └── login.html
+├── frontend
+│   ├── assets
+│   ├── login_window.py
+│   ├── main.py
+│   ├── requirements.txt
+│   └── simulation_window.py
+├── model_semiconductor
+│   ├── 01_diode1
+│   │   └── __init__.py
+│   └── 02_diode2
+│       └── __init__.py
+└── README.md
