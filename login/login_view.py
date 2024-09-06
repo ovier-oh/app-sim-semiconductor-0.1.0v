@@ -1,48 +1,59 @@
-# file: login view 
+import sys
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QApplication
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
+import requests
 
-from PyQt5.QtWidgets import QtWidget, QVBOxLayot, QHBoxLayout, QLabel, QLineEdit, QPushButton 
-from PyQt5.QtGui import QPixmap 
-from PyQt5.QtCore import Qt 
-from login.auth import authenticate 
+class LoginWindow(QWidget):
+    def __init__(self):
+        super().__init__()
 
-class LoginWindow(QtWidget):
-        def __init__(self):
-            super().__init__()
+        self.setWindowTitle('Custom Login - SPICE Simulator')
+        self.setFixedSize(400, 500)
+        self.setStyleSheet("background-color: #101028; color: white;")
 
-            self.setWindowTitle('Custom Login -SPICE Simulator')
-            self.setFixedSize(400,600)
-            self.setStyleSheet("background-color: #101028; color: white")
-            
-            layout = QVBOxLayot()
+        layout = QVBoxLayout()
 
-            logo_label = QLavel(self)
-            pixmap = QPizmap('src/rocket.png')
-            logo_label.setPixmap(pixmap.scaled(100, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-            logo_label.setAlignment(Qt.AlignmentCenter)
+        logo_label = QLabel(self)
+        pixmap = QPixmap('graphx/rocket.png')
+        logo_label.setPixmap(pixmap.scaled(100, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        logo_label.setAlignment(Qt.AlignCenter)
 
-            user_input = QLineEdit(self)
-            user_input.setPlaceholderText("Username")
-            user_input.setStyleSheet("border: 2px solid #ffba00; 5px; color: white;")
+        self.user_input = QLineEdit(self)
+        self.user_input.setPlaceholderText("Username")
+        self.user_input.setStyleSheet("border: 2px solid #ffba00; padding: 5px; color: white;")
 
-            password_input = QLineEdit(self)
-        password_input.setPlaceholderText("Password")
-        password_input.setEchoMode(QLineEdit.Password)
-        password_input.setStyleSheet("border: 2px solid #ffba00; padding: 5px; color: white;")
+        self.password_input = QLineEdit(self)
+        self.password_input.setPlaceholderText("Password")
+        self.password_input.setEchoMode(QLineEdit.Password)
+        self.password_input.setStyleSheet("border: 2px solid #ffba00; padding: 5px; color: white;")
 
         login_button = QPushButton('Sign In', self)
         login_button.setStyleSheet("background-color: #ffba00; color: black; border: 2px solid #ffba00; padding: 10px;")
-        login_button.clicked.connect(lambda: self.handle_login(user_input.text(), password_input.text()))
+        login_button.clicked.connect(self.handle_login)
 
         layout.addWidget(logo_label)
-        layout.addWidget(user_input)
-        layout.addWidget(password_input)
+        layout.addWidget(self.user_input)
+        layout.addWidget(self.password_input)
         layout.addWidget(login_button)
 
         self.setLayout(layout)
 
-        def handle_login(self, username, password):
-            if authenticate(username, password):
-                print("Login successful!")
-                # Aquí podrías abrir la ventana principal de la app SPICE
+    def handle_login(self):
+        username = self.user_input.text()
+        password = self.password_input.text()
+
+        try:
+            response = requests.post('http://127.0.0.1:5000/login', json={"username": username, "password": password})
+            if response.status_code == 200:
+                print("Login successful")
             else:
-                print("Invalid credentials")
+                print("Login failed: Invalid credentials")
+        except requests.exceptions.RequestException as e:
+            print(f"Error connecting to the server: {e}")
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = LoginWindow()
+    window.show()
+    sys.exit(app.exec_())
